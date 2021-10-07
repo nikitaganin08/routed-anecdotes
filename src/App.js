@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
-import { Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
 import Footer from './components/Footer'
 import About from './components/About'
 import Menu from './components/Menu'
 import AnecdoteList from './components/AnecdotesList'
 import CreateNew from './components/CreateNew'
 import Anecdote from './components/Anecdote'
+import Notification from './components/Notification'
 
 const App = () => {
     const [anecdotes, setAnecdotes] = useState([
@@ -24,6 +25,7 @@ const App = () => {
             id: '2'
         }
     ])
+    const history = useHistory()
 
     // eslint-disable-next-line no-unused-vars
     const [notification, setNotification] = useState('')
@@ -31,6 +33,9 @@ const App = () => {
     const addNew = (anecdote) => {
         anecdote.id = (Math.random() * 10000).toFixed(0)
         setAnecdotes(anecdotes.concat(anecdote))
+        setNotification(`a new anecdote ${anecdote.content} created!`)
+        setTimeout(() => setNotification(null), 10000)
+        history.push('/')
     }
 
     const anecdoteById = (id) =>
@@ -50,11 +55,11 @@ const App = () => {
 
     const match = useRouteMatch('/anecdotes/:id')
     const anecdote = match ? anecdotes.find(a => a.id === match.params.id) : null
-    console.log(anecdote)
     return (
         <div>
             <h1>Software anecdotes</h1>
             <Menu/>
+            <Notification notification={notification}/>
             <Switch>
                 <Route path='/anecdotes/:id'>
                     <Anecdote anecdote={anecdote}/>
